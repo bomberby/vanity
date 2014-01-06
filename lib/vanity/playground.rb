@@ -308,7 +308,7 @@ module Vanity
           env = ENV["RACK_ENV"] || ENV["RAILS_ENV"] || "development"
           redis = load_config_file("redis.yml")[env]
           fail "No configuration for #{env}" unless redis
-          establish_connection "redis://" + redis
+          establish_connection (redis.start_with?("redis://") ? redis : "redis://" + redis)
         else
           establish_connection :adapter=>"redis"
         end
@@ -379,7 +379,7 @@ module Vanity
       warn "Deprecated: use establish_connection method instead"
       case spec_or_connection
       when String
-        establish_connection "redis://" + spec_or_connection
+        establish_connection (spec_or_connection.start_with?("redis://") ? spec_or_connection : "redis://" + spec_or_connection)
       when ::Redis
         @connection = Adapters::RedisAdapter.new(spec_or_connection)
       when :mock
@@ -405,7 +405,7 @@ module Vanity
       else
         connection_spec = arguments.shift || options[:connection]
         if connection_spec
-          connection_spec = "redis://" + connection_spec unless connection_spec[/^\w+:/]
+          connection_spec = (connection_spec.start_with?("redis://") ? connection_spec : "redis://" + connection_spec) unless connection_spec[/^\w+:/]
           establish_connection connection_spec
 	else
 	  establish_connection
