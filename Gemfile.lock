@@ -2,6 +2,8 @@ PATH
   remote: .
   specs:
     vanity (1.8.3)
+      redis (~> 2.0)
+      redis-namespace (~> 1.0.0)
 
 GEM
   remote: https://rubygems.org/
